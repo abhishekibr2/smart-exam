@@ -1,0 +1,75 @@
+name: Project Status Update
+
+on:
+  schedule:
+    # Runs at the start of every hour
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  status-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Fetch Repository Data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          # Fetch open issues
+          OPEN_ISSUES=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/issues?state=open" | jq '. | length')
+
+          # Fetch open pull requests
+          OPEN_PRS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls?state=open" | jq '. | length')
+
+          # Fetch issue labels (bug, feature, docs)
+          BUG_ISSUES=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/issues?state=open&labels=bug" | jq '. | length')
+          FEATURE_ISSUES=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/issues?state=open&labels=feature" | jq '. | length')
+          DOC_ISSUES=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/issues?state=open&labels=documentation" | jq '. | length')
+
+          # Fetch deployment stats (success rate)
+          DEPLOYMENTS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs" | jq '[.workflow_runs[] | select(.status=="completed" and .conclusion=="success")] | length')
+          TOTAL_RUNS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs" | jq '.workflow_runs | length')
+          DEPLOYMENT_RATE=$(echo "scale=2; ($DEPLOYMENTS/$TOTAL_RUNS)*100" | bc)
+
+          # Generate Status Update
+          echo "**Project Status Update** - $(date +'%Y-%m-%d %H:%M:%S') IST" > status_update.md
+          echo "#### 🔍 **Current Repository Status**" >> status_update.md
+          echo "- 📂 **Open Issues:** $OPEN_ISSUES" >> status_update.md
+          echo "  - 🐞 **Bug Reports:** $BUG_ISSUES" >> status_update.md
+          echo "  - ✨ **Feature Requests:** $FEATURE_ISSUES" >> status_update.md
+          echo "  - 📋 **Documentation Updates:** $DOC_ISSUES" >> status_update.md
+          echo "- 🔧 **Open Pull Requests:** $OPEN_PRS" >> status_update.md
+          echo "" >> status_update.md
+          echo "#### 🕒 **Activity Summary (Last 24 Hours)**" >> status_update.md
+          echo "- 📝 **New Issues Created:** TBD" >> status_update.md
+          echo "- 🛠 **PRs Merged:** TBD" >> status_update.md
+          echo "- 🗑 **Closed Issues:** TBD" >> status_update.md
+          echo "" >> status_update.md
+          echo "#### 📊 **Workflow Success Rate**" >> status_update.md
+          echo "- 🚀 **Deployment Pipeline Success:** $DEPLOYMENT_RATE% ($DEPLOYMENTS/$TOTAL_RUNS successful runs)" >> status_update.md
+          echo "" >> status_update.md
+          echo "#### 🚀 **Action Items**" >> status_update.md
+          echo "1. **Review Pending PRs**: TBD" >> status_update.md
+          echo "2. **Resolve High-Priority Bugs**: TBD" >> status_update.md
+          echo "" >> status_update.md
+          echo "#### 🕒 **Last Updated:** $(date +'%Y-%m-%d %H:%M:%S') IST" >> status_update.md
+
+      - name: Post Update to Issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          # Post the update to a specific issue (or create a new one)
+          curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -d "{\"body\": \"$(cat status_update.md)\"}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/1/comments"

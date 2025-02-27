@@ -1,0 +1,23 @@
+name: PR check with build
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # - name: Cypress Run
+      #   uses: cypress-io/github-action@v6
+      #   with:
+      #     working-directory: client
+      #     install-command: npm ci --legacy-peer-deps
+      #     build: npm run build
+      #     start: npm start
+      #     config-file: cypress.config.ts

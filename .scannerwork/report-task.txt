@@ -1,0 +1,6 @@
+projectKey=Smart-Exam
+serverUrl=http://localhost:9000
+serverVersion=24.12.0.100206
+dashboardUrl=http://localhost:9000/dashboard?id=Smart-Exam
+ceTaskId=ce6a34b4-69db-4872-9067-8d874e069c94
+ceTaskUrl=http://localhost:9000/api/ce/task?id=ce6a34b4-69db-4872-9067-8d874e069c94

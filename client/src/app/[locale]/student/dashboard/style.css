@@ -1,0 +1,22 @@
+@media (min-width:1600px) {
+    .dash-icon-g {
+        width: 65px;
+        height: 65px;
+    }
+
+}
+
+.pagination-icon {
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.pagination-icon:hover {
+    color: #1890ff;
+}
+
+.pagination-icon.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}

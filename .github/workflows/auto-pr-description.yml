@@ -1,0 +1,36 @@
+name: Auto PR Description
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  set-pr-description:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Extract issue details
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          # Extract issue number from branch name
+          ISSUE_NUMBER=$(echo "${{ github.head_ref }}" | grep -o -E '[0-9]+')
+          if [ -z "$ISSUE_NUMBER" ]; then
+            echo "No issue number found in the branch name. But still you can merge the PR."
+            exit 0
+          fi
+
+          # Fetch issue details using GitHub API
+          ISSUE_RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER")
+          ISSUE_TITLE=$(echo "$ISSUE_RESPONSE" | jq -r '.title')
+          ISSUE_BODY=$(echo "$ISSUE_RESPONSE" | jq -r '.body')
+
+          # Update PR title and body
+          curl -s -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -d "{\"title\":\"$ISSUE_TITLE\", \"body\":\"$ISSUE_BODY\"}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"

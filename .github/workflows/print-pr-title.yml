@@ -1,0 +1,15 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  print_title_of_pr:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Print Title of PR
+        run: echo "The Title of your PR is ${{ github.event.pull_request.title }}"
+      - name: Print Description of PR
+        run: echo "The Description of your PR is ${{ github.event.pull_request.body }}"

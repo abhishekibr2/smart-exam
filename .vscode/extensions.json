@@ -1,0 +1,20 @@
+{
+	"recommendations": [
+		"dbaeumer.vscode-eslint",
+		"christian-kohler.path-intellisense",
+		"esbenp.prettier-vscode",
+		"PKief.material-icon-theme",
+		"usernamehw.errorlens",
+		"streetsidesoftware.code-spell-checker",
+		"dzhavat.bracket-pair-toggler",
+		"MS-vsliveshare.vsliveshare",
+		"formulahendry.auto-rename-tag",
+		"TabNine.tabnine-vscode",
+		"Gruntfuggly.todo-tree",
+		"GitHub.vscode-github-actions",
+		"Codium.codium",
+		"alefragnani.Bookmarks",
+		"WallabyJs.console-ninja",
+		"AykutSarac.jsoncrack-vscode"
+	]
+}

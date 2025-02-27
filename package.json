@@ -1,0 +1,73 @@
+{
+	"name": "nodenext",
+	"version": "1.0.0",
+	"description": "",
+	"proxy": "http://127.0.0.1:3001/api",
+	"scripts": {
+		"start": "npm run lint && concurrently --names \"SERVER,CLIENT,DOCS\" --prefix-colors \"bgBlue.bold,bgGreen.bold,bgYellow.bold\" \"npm run start:server\" \"npm run start:client\"",
+		"production": "npm run lint && concurrently \"npm run start:server\" \"npm run start:dev:clientProd\"",
+		"production:main": "npm run lint && concurrently \"npm run start:server\" \"npm run start:main:clientProd\"",
+		"start:client": "cd client && npm run dev",
+		"start:server": "cd server && npm run dev",
+		"start:docs": "cd docs && mintlify dev --port 3007",
+		"install:server": "cd server && npm install",
+		"install:client": "cd client && npm install --f",
+		"install:docs": "cd docs && npm install",
+		"build": "npm run lint && cd client && npm run build",
+		"test": "npm run test",
+		"start:dev:clientProd": "cd client && npm start",
+		"start:main:clientProd": "cd client && npm run start:main",
+		"setup": "bash setup-pre-push-hook.sh && npm install --f && npm run install:server && npm run install:client",
+		"format": "prettier --write . --ignore-path .prettierignore",
+		"commit": "cz",
+		"lint": "concurrently \"npm run lint:client\" \"npm run lint:server\"",
+		"lint:client": "cd client && npm run lint",
+		"lint:server": "cd server && npm run lint",
+		"debug": "cd server && ndb node index.js"
+	},
+	"keywords": [],
+	"author": "Binary Data <binarydata.sale@gmail.com>",
+	"license": "ISC",
+	"devDependencies": {
+		"commitizen": "^4.3.0",
+		"concurrently": "^8.2.2",
+		"cz-conventional-changelog": "^3.3.0",
+		"eslint": "^8.54.0",
+		"eslint-config-prettier": "^9.0.0",
+		"eslint-plugin-prettier": "^5.0.1",
+		"eslint-plugin-sonarjs": "^1.0.3",
+		"husky": "^8.0.3",
+		"lint-staged": "^15.2.2",
+		"prettier": "^3.2.4"
+	},
+	"config": {
+		"commitizen": {
+			"path": "cz-conventional-changelog"
+		}
+	},
+	"repository": "https://github.com/binarydata123/StudyBuddy.git",
+	"dependencies": {
+		"dotenv": "^16.4.5",
+		"eslint-plugin-eslint-plugin": "^6.1.0",
+		"multer": "^1.4.5-lts.1",
+		"next-auth": "^4.24.11",
+		"pdf2img": "^0.5.0",
+		"puppeteer": "^23.9.0",
+		"react-to-pdf": "^1.0.1",
+		"sonar-scanner": "^3.1.0",
+		"sonarqube-scanner": "^4.2.6",
+		"sweetalert2": "^11.16.0"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
+	},
+	"lint-staged": {
+		"*.{js,jsx,ts,tsx,html}": [
+			"prettier --write",
+			"eslint",
+			"git add"
+		]
+	}
+}
